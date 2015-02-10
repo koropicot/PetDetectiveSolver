@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetDetectiveSolver", "PetDetectiveSolver\PetDetectiveSolver.csproj", "{8E3B1717-D430-46D5-8220-2A4108D1FC2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetDetectiveSolverTest", "PetDetectiveSolverTest\PetDetectiveSolverTest.csproj", "{D745DB98-A9E1-4FDA-86A9-E1F7AC3EF156}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E3B1717-D430-46D5-8220-2A4108D1FC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E3B1717-D430-46D5-8220-2A4108D1FC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E3B1717-D430-46D5-8220-2A4108D1FC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E3B1717-D430-46D5-8220-2A4108D1FC2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D745DB98-A9E1-4FDA-86A9-E1F7AC3EF156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D745DB98-A9E1-4FDA-86A9-E1F7AC3EF156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D745DB98-A9E1-4FDA-86A9-E1F7AC3EF156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D745DB98-A9E1-4FDA-86A9-E1F7AC3EF156}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
