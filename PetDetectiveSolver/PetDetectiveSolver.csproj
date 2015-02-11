@@ -48,6 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BestFirstSearch.cs" />
+    <Compile Include="PDNode.cs" />
+    <Compile Include="PDPosition.cs" />
+    <Compile Include="PDSolver.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
