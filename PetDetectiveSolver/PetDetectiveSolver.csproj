@@ -48,8 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BestFirstSearch.cs" />
+    <Compile Include="InputUtil.cs" />
+    <Compile Include="MoveCost.cs" />
     <Compile Include="PDNode.cs" />
-    <Compile Include="PDPosition.cs" />
+    <Compile Include="PDPet.cs" />
+    <Compile Include="PDPoint.cs" />
     <Compile Include="PDSolver.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="Program.cs" />

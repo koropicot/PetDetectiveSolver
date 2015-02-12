@@ -8,10 +8,10 @@ namespace PetDetectiveSolver
 {
     public class PDNode : IEquatable<PDNode>
     {
-        public readonly PDPosition Position;
-        public readonly PetStatus[] PetStatuses;
+        public readonly PDPoint Position;
+        public readonly Dictionary<PDPet, PDPetStatus> PetStatuses;
 
-        public PDNode(PDPosition position, PetStatus[] PetStatuses)
+        public PDNode(PDPoint position, Dictionary<PDPet, PDPetStatus> PetStatuses)
         {
             this.Position = position;
             this.PetStatuses = PetStatuses;
@@ -19,12 +19,12 @@ namespace PetDetectiveSolver
 
         public bool Equals(PDNode other)
         {
-            return other != null ? this.Position.Equals(other.Position) && this.PetStatuses.SequenceEqual(other.PetStatuses) : false;
+            return other == null ? false : this.Position.Equals(other.Position) && this.PetStatuses.SequenceEqual(other.PetStatuses);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is PDNode ? this.Equals((PDNode)obj) : false;
+            return this.Equals(obj as PDNode);
         }
 
         public override int GetHashCode()
@@ -33,7 +33,7 @@ namespace PetDetectiveSolver
         }
     }
 
-    public enum PetStatus
+    public enum PDPetStatus
     {
         BeforeCarry,
         Carring,

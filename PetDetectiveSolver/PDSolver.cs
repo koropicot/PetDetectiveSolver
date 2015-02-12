@@ -10,33 +10,34 @@ namespace PetDetectiveSolver
     public class PDSolver
     {
         const int MaxCarry = 4;
-        private int petCount;
-        private int[][] costs;
+        private HashSet<PDPet> pets;
+        private Dictionary<PDPoint, Dictionary<PDPoint, int>> costs;
 
-        public PDSolver(int[][] costs)
+        public PDSolver(HashSet<PDPet> pets, Dictionary<PDPoint, Dictionary<PDPoint, int>> costs)
         {
-            this.petCount = (costs.Length - 1) / 2;
+            this.pets = pets;
             this.costs = costs;
         }
 
         public Option<Traceable<PDNode>> Solve()
         {
-            return BestFirstSearch.Search(new PDNode(PDPosition.Start(), Enumerable.Repeat(PetStatus.BeforeCarry, petCount).ToArray()),
+            return BestFirstSearch.Search(new PDNode(PDPoint.Start(), pets.ToDictionary(pet => pet , _ => PDPetStatus.BeforeCarry)),
                 Nexts, IsGoal, Comparer<Traceable<PDNode>>.Create(Comparer));
         }
 
         private IEnumerable<PDNode> Nexts(PDNode current)
         {
-            var canCarry = current.PetStatuses.Count(status => status == PetStatus.Carring) < MaxCarry;
+            var canCarry = current.PetStatuses.Count(kvp => kvp.Value == PDPetStatus.Carring) < MaxCarry;
 
             return current.PetStatuses
-                .Select((status, i) => new { i, status })
                 //運び中または車に空きがある状態で運ぶ前の動物が次の操作の対象になる
-                .Where(p => (p.status == PetStatus.Carring) || (canCarry && p.status == PetStatus.BeforeCarry))
-                .Select(p =>
-                    p.status == PetStatus.BeforeCarry
-                        ? new PDNode(PDPosition.Pet(p.i), current.PetStatuses.Select((s, i) => i == p.i ? PetStatus.Carring : s).ToArray())
-                        : new PDNode(PDPosition.Home(p.i), current.PetStatuses.Select((s, i) => i == p.i ? PetStatus.AfterCarry : s).ToArray()));
+                .Where(kvp => (kvp.Value == PDPetStatus.Carring) || (canCarry && kvp.Value == PDPetStatus.BeforeCarry))
+                .Select(next =>
+                    next.Value == PDPetStatus.BeforeCarry
+                        ? new PDNode(PDPoint.Pet(next.Key),
+                            current.PetStatuses.ToDictionary(kvp => kvp.Key, kvp => kvp.Key == next.Key ? PDPetStatus.Carring : kvp.Value))
+                        : new PDNode(PDPoint.Home(next.Key),
+                            current.PetStatuses.ToDictionary(kvp => kvp.Key, kvp => kvp.Key == next.Key ? PDPetStatus.AfterCarry : kvp.Value)));
         }
 
         private int Comparer(Traceable<PDNode> path1, Traceable<PDNode> path2)
@@ -53,24 +54,28 @@ namespace PetDetectiveSolver
                 .Apply(list => list.Skip(1)
                     .Aggregate(
                         new { cost = 0, list.First().Position },
-                        (acc, node) => new { cost = acc.cost + costs[acc.Position.ToIndex()][node.Position.ToIndex()], node.Position })
+                        (acc, node) => new { cost = acc.cost + costs[acc.Position][node.Position], node.Position })
                     .Apply(res => res.cost));
         }
 
         private int HCost(PDNode node)
         {
-            var now = node.Position.ToIndex();
-            var unVisited = new HashSet<int>(node.PetStatuses.SelectMany((status, i) =>
-                status == PetStatus.AfterCarry ? Enumerable.Empty<int>() :
-                status == PetStatus.Carring ? new[] { PDPosition.Home(i).ToIndex() } :
-                new[] { PDPosition.Pet(i).ToIndex(), PDPosition.Home(i).ToIndex() }));
+            var now = node.Position;
+            var unVisited = new HashSet<PDPoint>(node.PetStatuses.SelectMany(kvp =>
+                kvp.Value == PDPetStatus.AfterCarry ? Enumerable.Empty<PDPoint>() :
+                kvp.Value == PDPetStatus.Carring ? new[] { PDPoint.Home(kvp.Key) } :
+                new[] { PDPoint.Pet(kvp.Key), PDPoint.Home(kvp.Key) }));
 
-            return unVisited.Select(to => costs[to].Where((c, from) => from != to && (from == now || unVisited.Contains(from))).Min()).Sum();
+            return unVisited
+                .Select(uv => costs[uv]
+                    .Where(kvp => kvp.Key != uv && (kvp.Key == now || unVisited.Contains(kvp.Key)))
+                    .Apply(cost => cost.Any() ? cost.Min(kvp => kvp.Value) : 0))
+                .Sum();
         }
 
         private bool IsGoal(PDNode node)
         {
-            return node.PetStatuses.All(status => status == PetStatus.AfterCarry);
+            return node.PetStatuses.All(kvp => kvp.Value == PDPetStatus.AfterCarry);
         }
     }
 }
