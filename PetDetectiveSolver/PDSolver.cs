@@ -21,8 +21,13 @@ namespace PetDetectiveSolver
 
         public Option<Traceable<PDNode>> Solve()
         {
-            return BestFirstSearch.Search(new PDNode(PDPoint.Start(), pets.ToDictionary(pet => pet , _ => PDPetStatus.BeforeCarry)),
-                Nexts, IsGoal, Comparer<Traceable<PDNode>>.Create(Comparer));
+            long searchNodes = 0;
+            var ret =  BestFirstSearch.Search(new PDNode(PDPoint.Start(), pets.ToDictionary(pet => pet , _ => PDPetStatus.BeforeCarry)),
+                Nexts, IsGoal, Comparer<Traceable<PDNode>>.Create(Comparer),
+                _ => searchNodes++);
+
+            Console.WriteLine(searchNodes);
+            return ret;
         }
 
         private IEnumerable<PDNode> Nexts(PDNode current)
