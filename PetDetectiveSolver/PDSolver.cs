@@ -49,18 +49,24 @@ namespace PetDetectiveSolver
         {
             var cost1 = PathCost(path1) + HCost(path1.Value);
             var cost2 = PathCost(path2) + HCost(path2.Value);
-
+             
             return cost2 - cost1;
         }
 
+        private Dictionary<Traceable<PDNode>, int> memo = new Dictionary<Traceable<PDNode>,int>();
+
         public int PathCost(Traceable<PDNode> path)
         {
-            return path.Trace()
-                .Apply(list => list.Skip(1)
-                    .Aggregate(
-                        new { cost = 0, list.First().Position },
-                        (acc, node) => new { cost = acc.cost + costs[acc.Position][node.Position], node.Position })
-                    .Apply(res => res.cost));
+            if(path.Parent == null)
+                return 0;
+
+            if (memo.ContainsKey(path))
+                return memo[path];
+
+            var cost = PathCost(path.Parent) + costs[path.Parent.Value.Position][path.Value.Position];
+            memo[path] = cost;
+
+            return cost;
         }
 
         private int HCost(PDNode node)
