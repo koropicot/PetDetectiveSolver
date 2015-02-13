@@ -71,16 +71,8 @@ namespace PetDetectiveSolver
 
         private int HCost(PDNode node)
         {
-            var now = node.Position;
-            var unVisited = new HashSet<PDPoint>(node.PetStatuses.SelectMany(kvp =>
-                kvp.Value == PDPetStatus.AfterCarry ? Enumerable.Empty<PDPoint>() :
-                kvp.Value == PDPetStatus.Carring ? new[] { PDPoint.Home(kvp.Key) } :
-                new[] { PDPoint.Pet(kvp.Key), PDPoint.Home(kvp.Key) }));
-
-            return unVisited
-                .Select(uv => costs[uv]
-                    .Where(kvp => kvp.Key != uv && (kvp.Key == now || unVisited.Contains(kvp.Key)))
-                    .Apply(cost => cost.Any() ? cost.Min(kvp => kvp.Value) : 0))
+            return node.PetStatuses.Values
+                .Select(s => s == PDPetStatus.AfterCarry ? 0 : s == PDPetStatus.Carring ? 1 : 2)
                 .Sum();
         }
 
