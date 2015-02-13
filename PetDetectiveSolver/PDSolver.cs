@@ -69,19 +69,26 @@ namespace PetDetectiveSolver
             return cost;
         }
 
+        private Dictionary<PDNode, int> memoH = new Dictionary<PDNode, int>();
+
         private int HCost(PDNode node)
         {
+            if (memoH.ContainsKey(node))
+                return memoH[node];
+
             var now = node.Position;
             var unVisited = new HashSet<PDPoint>(node.PetStatuses.SelectMany(kvp =>
                 kvp.Value == PDPetStatus.AfterCarry ? Enumerable.Empty<PDPoint>() :
                 kvp.Value == PDPetStatus.Carring ? new[] { PDPoint.Home(kvp.Key) } :
                 new[] { PDPoint.Pet(kvp.Key), PDPoint.Home(kvp.Key) }));
 
-            return unVisited
+            var costH = unVisited
                 .Select(uv => costs[uv]
                     .Where(kvp => kvp.Key != uv && (kvp.Key == now || unVisited.Contains(kvp.Key)))
                     .Apply(cost => cost.Any() ? cost.Min(kvp => kvp.Value) : 0))
                 .Sum();
+            memoH[node] = costH;
+            return costH;
         }
 
         private bool IsGoal(PDNode node)
